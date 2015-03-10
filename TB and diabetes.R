@@ -21,6 +21,8 @@ library(class)
 library(reshape2)
 library(plyr)
 library(tables)
+
+
 #### Cargando bases de datos de tuberculosis
 tb_world<-read.csv("world_tb_dataset.csv")
 tab1(tb_world$Indicator)
@@ -46,6 +48,8 @@ tb_lac_f<-subset(tb_lac,country %in% c("Argentina", "Bolivia", "Brazil","Chile",
                                        "Mexico","Nicaragua","Panama","Paraguay","Peru",
                                        "Uruguay","Venezuela"))
 tb_lac_f<-as.data.frame(subset(tb_lac_f, tb_lac_f$year==2013))
+
+
 ###############################################################################################
 ##################### Cargando bases de datos de diabetes #####################################
 dm_world1<-read.csv("6th-Edition-Estimates_Update_2014.csv")
@@ -62,10 +66,10 @@ dm_lac1a<-dm_americas1a[,c(1,3,4,5,6,7,8,9,10)]
 dm_lac2a<-dm_americas2a[,c(1,3,4,5,6,7,8)]
 dm_lac1b<-dm_americas1b[,c(1,3,4,5,6,7,8,9,10)]
 dm_lac2b<-dm_americas2b[,c(1,3,4,5,6,7,8)]
-dm_lac1a$Country.territory <- revalue(dm_lac1a$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela","French Guiana"="Guyana"))
-dm_lac2a$Country.territory <- revalue(dm_lac2a$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela","French Guiana"="Guyana"))
-dm_lac1b$Country.territory <- revalue(dm_lac1b$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela","French Guiana"="Guyana"))
-dm_lac2b$Country.territory <- revalue(dm_lac2b$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela","French Guiana"="Guyana"))
+dm_lac1a$Country.territory <- revalue(dm_lac1a$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela"))
+dm_lac2a$Country.territory <- revalue(dm_lac2a$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela"))
+dm_lac1b$Country.territory <- revalue(dm_lac1b$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela"))
+dm_lac2b$Country.territory <- revalue(dm_lac2b$Country.territory, c("Bolivia (Plurinational State of)"="Bolivia", "Venezuela (Bolivarian Republic of)"="Venezuela"))
 dm_lac_f1<-merge(dm_lac1a,dm_lac2a,by=c("Country.territory"),all=TRUE)
 dm_lac_f2<-merge(dm_lac1b,dm_lac2b,by=c("Country.territory"),all=TRUE)
 dm_lac_f<-as.data.frame(rbind(dm_lac_f1,dm_lac_f2))
@@ -76,6 +80,8 @@ dm_lac_f<-subset(dm_lac_f,country %in% c("Argentina", "Bolivia", "Brazil","Chile
                                          "Uruguay","Venezuela"))
 dm_lac_ff<-data.frame(country=dm_lac_f$country,prev_dm=dm_lac_f$Diabetes.national.prevalence....,db_cases=dm_lac_f$Diabetes.cases..20.79..in.1000s.x,dm_expenditure=dm_lac_f$Mean.diabetes.related.expenditure.per.person.with.diabetes..USD.)
 tb_dm_lac<-merge(tb_lac_f,dm_lac_ff,by=c("country"),all=TRUE)
+
+
 ### Calculo del RAP ###
 Pe<-(tb_dm_lac$prev_dm)/100
 Pe
@@ -107,8 +113,9 @@ summ(tb_dm_lac$RAP,graph=FALSE)
 summ(tb_dm_lac$RAP_low,graph=FALSE)
 summ(tb_dm_lac$RAP_high,graph=FALSE)
 tb_dm_lac_sort<-tb_dm_lac[order(tb_dm_lac$prev_dm),]
+
 quartz(width=10, height=6, pointsize=10)
-plot(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP, ylim = c(0,30), type = "l", xlab="Prevalencia de Diabetes Mellitus (%)", ylab="Riesgo atribuible poblacional (%)")
+plot(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP, ylim = c(0,30), type = "l", xlab="Prevalencia de Diabetes (%)", ylab="Fracción Atribuible Poblacional (%)")
 #make polygon where coordinates start with lower limit and
 # then upper limit in reverse order
 polygon(c(tb_dm_lac_sort$prev_dm,rev(tb_dm_lac_sort$prev_dm)),c(tb_dm_lac_sort$RAP_low,rev(tb_dm_lac_sort$RAP_high)),col = "grey75", border = FALSE)
@@ -116,6 +123,13 @@ lines(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP, lwd = 2)
 #add red lines on borders of p`olygon
 lines(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP_high, col="red",lty=2)
 lines(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP_low, col="red",lty=2)
+
+
+
 data.table(Country=tb_dm_lac$country,TB.incidence=tb_dm_lac$ir_tb,TB.cases=tb_dm_lac$tb_cases,
            Prev.DM=tb_dm_lac$prev_dm,DM.cases=tb_dm_lac$db_cases,PAF=tb_dm_lac$RAP,PAF.low=tb_dm_lac$RAP_low,
            PAF.high=tb_dm_lac$RAP_high,TB.case.atrb.DM=tb_dm_lac$tb_cases_atr_dm,TB.case.atrb.DM.low=tb_dm_lac$tb_cases_atr_dm_low,TB.case.atrb.DM.high=tb_dm_lac$tb_cases_atr_dm_high)
+
+
+
+
