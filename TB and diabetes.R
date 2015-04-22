@@ -23,8 +23,8 @@ library(plyr)
 library(tables)
 
 
-
-#### Cargando bases de datos de tuberculosis
+#####################################################################################
+######### Cargando bases de datos de tuberculosis  ###################################
 tb_world<-read.csv("world_tb_dataset.csv")
 tab1(tb_world$Indicator)
 tb_americas<-subset(tb_world,tb_world$WHO.region=="Americas")
@@ -49,6 +49,13 @@ tb_lac_f<-subset(tb_lac,country %in% c("Argentina", "Bolivia", "Brazil","Chile",
                                        "Mexico","Nicaragua","Panama","Paraguay","Peru",
                                        "Uruguay","Venezuela"))
 tb_lac_f<-as.data.frame(subset(tb_lac_f, tb_lac_f$year==2013))
+
+
+###############################################################################################
+#################### Cargando base de TB por grupos de edad ###################################
+
+
+
 
 
 ###############################################################################################
