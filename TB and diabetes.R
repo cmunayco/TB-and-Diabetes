@@ -108,9 +108,11 @@ RRe[1]
 ORe<-matrix(c(1.2,7.8),2)
 ORe
 ORe[1]
+
 f<-function(Pe,RRe) {
   (Pe*(RRe-1)/(1 + Pe*(RRe-1)))*100
 }
+
 tb_dm_lac$RAP<-round(f(Pe,RRe[1]),2)
 list(tb_dm_lac$country,tb_dm_lac$RAP)
 tb_dm_lac$RAP_low<-round(f(Pe,RRe[2]),2)
