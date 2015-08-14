@@ -26,7 +26,6 @@ library(tables)
 #####################################################################################
 ######### Cargando bases de datos de tuberculosis  ###################################
 tb_world<-read.csv("world_tb_dataset.csv")
-tab1(tb_world$Indicator)
 tb_americas<-subset(tb_world,tb_world$WHO.region=="Americas")
 data1=subset(tb_americas,Indicator %in% c("Incidence of tuberculosis (per 100 000 population per year)"))
 data1<-data1[,c(4,2,5,6,7)]
@@ -51,10 +50,14 @@ tb_lac_f<-subset(tb_lac,country %in% c("Argentina", "Bolivia", "Brazil","Chile",
 tb_lac_f<-as.data.frame(subset(tb_lac_f, tb_lac_f$year==2013))
 
 
-###############################################################################################
-#################### Cargando base de TB por grupos de edad ###################################
 
+tb_notification_2012<-read.csv("tb_noti_2012.csv")
 
+tb_notification_2012$total_adult_case[tb_notification_2012$country=="Peru"] <- tb_notification_2012$tot_newrel[19] * 0.8867721 ## from DGE Surveillance system
+tb_notification_2012$total_adult_case[tb_notification_2012$country=="Guatemala"] <- tb_notification_2012$tot_newrel[11] * 0.8948220 ## from DGE Surveillance system
+tb_notification_2012$total_adult_case<- round(tb_notification_2012$total_adult_case)
+
+list(tb_notification_2012$country,tb_notification_2012$total_adult_case)
 
 
 
@@ -123,9 +126,9 @@ tb_dm_lac$RAP_OR_low<-round(f(Pe,ORe[1]),2)
 list(tb_dm_lac$country,tb_dm_lac$RAP_OR_low)
 tb_dm_lac$RAP_OR_high<-round(f(Pe,ORe[2]),2)
 list(tb_dm_lac$country,tb_dm_lac$RAP_OR_high)
-tb_dm_lac$tb_cases_atr_dm<-round((tb_dm_lac$tb_cases*tb_dm_lac$RAP)/100,0)
-tb_dm_lac$tb_cases_atr_dm_low<-round((tb_dm_lac$tb_cases*tb_dm_lac$RAP_low)/100,0)
-tb_dm_lac$tb_cases_atr_dm_high<-round((tb_dm_lac$tb_cases*tb_dm_lac$RAP_high)/100,0)
+tb_dm_lac$tb_cases_atr_dm<-round((tb_notification_2012$total_adult_case*tb_dm_lac$RAP)/100,0)
+tb_dm_lac$tb_cases_atr_dm_low<-round((tb_notification_2012$total_adult_case*tb_dm_lac$RAP_low)/100,0)
+tb_dm_lac$tb_cases_atr_dm_high<-round((tb_notification_2012$total_adult_case*tb_dm_lac$RAP_high)/100,0)
 plot(tb_dm_lac$RAP,tb_dm_lac$ir_tb)
 plot(tb_dm_lac$ir_tb,tb_dm_lac$RAP)
 summ(tb_dm_lac$RAP,graph=FALSE)
@@ -147,7 +150,7 @@ y=c(tb_dm_lac_sort$RAP[1]+1,tb_dm_lac_sort$RAP[2]-1,tb_dm_lac_sort$RAP[3]+1,tb_d
     tb_dm_lac_sort$RAP[21]+1)
 
 quartz(width=10, height=6, pointsize=10)
-plot(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP, ylim = c(0,35), xlim = c(5,15),type = "l", xlab="Prevalencia de Diabetes (%), 2013", ylab="Fracción Atribuible Poblacional (%), 2013")
+plot(tb_dm_lac_sort$prev_dm, tb_dm_lac_sort$RAP, ylim = c(0,35), xlim = c(5,15),type = "l", xlab="Prevalencia de Diabetes (%), 2013", ylab="Riesgo Atribuible Poblacional (%), 2013")
 #make polygon where coordinates start with lower limit and
 # then upper limit in reverse order
 polygon(c(tb_dm_lac_sort$prev_dm,rev(tb_dm_lac_sort$prev_dm)),c(tb_dm_lac_sort$RAP_low,rev(tb_dm_lac_sort$RAP_high)),col = "grey75", border = FALSE)
@@ -159,7 +162,7 @@ text(x,y,tb_dm_lac_sort$country, cex=.8)
 
 
 
-data.table(Country=tb_dm_lac$country,TB.incidence=tb_dm_lac$ir_tb,TB.cases=tb_dm_lac$tb_cases,
+data.table(Country=tb_dm_lac$country,TB.incidence=tb_dm_lac$ir_tb,TB.cases=tb_notification_2012$total_adult_case,
            Prev.DM=tb_dm_lac$prev_dm,DM.cases=tb_dm_lac$db_cases,PAF=tb_dm_lac$RAP,PAF.low=tb_dm_lac$RAP_low,
            PAF.high=tb_dm_lac$RAP_high,TB.case.atrb.DM=tb_dm_lac$tb_cases_atr_dm,TB.case.atrb.DM.low=tb_dm_lac$tb_cases_atr_dm_low,TB.case.atrb.DM.high=tb_dm_lac$tb_cases_atr_dm_high)
 
